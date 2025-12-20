@@ -1,0 +1,58 @@
+import { useState } from 'react'
+import RegistrationForm from './components/RegistrationForm'
+import SuccessModal from './components/SuccessModal'
+import { submitToGoogleSheets, FormSubmission } from './utils/googleSheets'
+
+function App() {
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [submittedData, setSubmittedData] = useState<FormSubmission | null>(null)
+
+  const handleFormSubmit = async (data: Omit<FormSubmission, 'timestamp'>) => {
+    try {
+      // Submit to Google Sheets (don't wait for result, show success immediately)
+      submitToGoogleSheets(data).catch(err => console.error('Google Sheets error:', err))
+      
+      // Show success modal immediately
+      const submissionWithTimestamp: FormSubmission = {
+        ...data,
+        timestamp: new Date().toISOString(),
+      }
+      setSubmittedData(submissionWithTimestamp)
+      setShowSuccessModal(true)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      // Still show success for user experience
+      const submissionWithTimestamp: FormSubmission = {
+        ...data,
+        timestamp: new Date().toISOString(),
+      }
+      setSubmittedData(submissionWithTimestamp)
+      setShowSuccessModal(true)
+    }
+  }
+
+  return (
+    <div className="min-vh-100 py-3 py-md-4 py-lg-5" style={{ backgroundColor: '#f0f4f8' }}>
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-10 col-lg-8 col-xl-7">
+            <div className="card shadow-sm">
+              <div className="card-body p-3 p-md-4 p-lg-5">
+                <RegistrationForm onSubmit={handleFormSubmit} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {showSuccessModal && submittedData && (
+        <SuccessModal
+          onClose={() => setShowSuccessModal(false)}
+          data={submittedData}
+        />
+      )}
+    </div>
+  )
+}
+
+export default App
