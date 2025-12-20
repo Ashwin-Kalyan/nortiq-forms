@@ -1,20 +1,15 @@
 /**
- * Google Sheets Integration
+ * Google Sheets Integration via Python Backend
  * 
- * To use this, you need to:
- * 1. Create a Google Sheet
- * 2. Set up a Google Apps Script web app
- * 3. Configure the script URL below
+ * The backend handles both Google Sheets integration and email sending.
  * 
- * Instructions:
- * 1. Create a new Google Sheet
- * 2. Go to Extensions > Apps Script
- * 3. Paste the script from scripts/google-apps-script.js
- * 4. Deploy as web app (Execute as: Me, Who has access: Anyone)
- * 5. Copy the web app URL and set it as GOOGLE_SCRIPT_URL
+ * To set up:
+ * 1. Follow instructions in backend/README.md
+ * 2. Start the Python backend server (python backend/app.py)
+ * 3. Set VITE_BACKEND_URL in .env file (e.g., http://localhost:5000)
  */
 
-const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'YOUR_GOOGLE_SCRIPT_URL_HERE'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 export interface FormSubmission {
   fullName: string
@@ -29,20 +24,13 @@ export interface FormSubmission {
 }
 
 export const submitToGoogleSheets = async (data: Omit<FormSubmission, 'timestamp'>): Promise<boolean> => {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
-    console.warn('Google Script URL not configured. Please set VITE_GOOGLE_SCRIPT_URL in .env')
-    // Return true to allow form submission even without Sheets integration (for testing)
-    return true
-  }
-
   try {
     const submissionData: FormSubmission = {
       ...data,
       timestamp: new Date().toISOString(),
     }
 
-    // Send as JSON - Google Apps Script can handle this
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
+    const response = await fetch(`${BACKEND_URL}/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,20 +38,20 @@ export const submitToGoogleSheets = async (data: Omit<FormSubmission, 'timestamp
       body: JSON.stringify(submissionData),
     })
 
-    // Try to read response if possible
-    try {
-      const result = await response.json()
-      return result.success !== false
-    } catch {
-      // If we can't parse response (CORS issue), assume success if status is ok or 0
-      return response.ok || response.status === 0
+    const result = await response.json()
+    
+    if (result.success) {
+      console.log('Successfully submitted to backend')
+      return true
+    } else {
+      console.error('Backend error:', result.error)
+      return false
     }
   } catch (error) {
-    console.error('Error submitting to Google Sheets:', error)
-    // Don't block form submission if Sheets fails - just log the error
-    // Return true so user still sees success message
-    // In production, you might want to queue failed submissions for retry
+    console.error('Error submitting to backend:', error)
+    console.error('Make sure the Python backend is running on', BACKEND_URL)
+    // Return true to allow form submission even if backend fails (for testing)
+    // In production, you might want to show an error to the user
     return true
   }
 }
-

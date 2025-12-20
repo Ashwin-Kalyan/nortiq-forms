@@ -28,6 +28,14 @@ dist-ssr
 .env.local
 .env.production
 
+# Backend files
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/credentials.json
+backend/venv/
+backend/env/
+
 # Dependencies
 /node_modules
 /jspm_packages
