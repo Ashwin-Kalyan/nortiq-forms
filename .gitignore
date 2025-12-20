@@ -78,5 +78,8 @@ out/
 # VS Code directory can be ignored except for specific files
 .vscode/
 
+# Project-specific folders
+info/
+
 
 
