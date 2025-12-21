@@ -111,6 +111,7 @@ def submit_form():
             data.get('university', ''),
             data.get('faculty', ''),
             data.get('academicYear', ''),
+            data.get('age', ''),
             data.get('email', ''),
             ', '.join(data.get('interests', [])) if isinstance(data.get('interests'), list) else data.get('interests', ''),
             data.get('comments', ''),
@@ -128,6 +129,7 @@ def submit_form():
                     'University',
                     'Faculty',
                     'Academic Year of PhD',
+                    'Age',
                     'Email',
                     'Interests',
                     'Comments'

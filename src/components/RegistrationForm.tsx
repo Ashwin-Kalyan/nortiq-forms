@@ -9,6 +9,7 @@ interface FormData {
   faculty: string
   facultyOther: string
   academicYear: string
+  age: string
   email: string
   interests: string[]
   comments: string
@@ -28,6 +29,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
     faculty: '',
     facultyOther: '',
     academicYear: '',
+    age: '',
     email: '',
     interests: [],
     comments: '',
@@ -77,8 +79,12 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
     }
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required'
-    } else if (!formData.email.includes('@')) {
-      newErrors.email = 'Valid email is required'
+    } else {
+      // Validate email format: name@example.com
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Please enter a valid email address (e.g., name@example.com)'
+      }
     }
     if (!formData.interests || formData.interests.length === 0) {
       newErrors.interests = 'Please select at least one interest'
@@ -99,6 +105,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
           university: formData.university === 'other' ? formData.universityOther : formData.university,
           faculty: formData.faculty === 'other' ? formData.facultyOther : formData.faculty,
           academicYear: formData.academicYear,
+          age: formData.age,
           email: formData.email,
           interests: formData.interests,
           comments: formData.comments,
@@ -132,8 +139,8 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
       <form onSubmit={handleSubmit}>
         {/* Full Name - Two fields side by side */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
-            Full Name
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
+            Full Name / 氏名
           </label>
           <div className="row g-3">
             <div className="col-12 col-sm-6">
@@ -144,7 +151,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 className={`form-control ${errors.firstName ? 'is-invalid' : ''}`}
                 placeholder="First Name"
               />
-              <div className="form-text">First Name</div>
+              <div className="form-text" style={{ fontSize: '0.85rem' }}>名</div>
               {errors.firstName && (
                 <div className="invalid-feedback">{errors.firstName}</div>
               )}
@@ -157,7 +164,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 className={`form-control ${errors.lastName ? 'is-invalid' : ''}`}
                 placeholder="Last Name"
               />
-              <div className="form-text">Last Name</div>
+              <div className="form-text" style={{ fontSize: '0.85rem' }}>姓</div>
               {errors.lastName && (
                 <div className="invalid-feedback">{errors.lastName}</div>
               )}
@@ -167,7 +174,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
         {/* Furigana */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
             Furigana / ふりがな
           </label>
           <input
@@ -184,8 +191,8 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
         {/* University - Dropdown with "If Other" field to the RIGHT */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
-            University
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
+            University / 大学
           </label>
           <div className="row g-2">
             <div className="col-12 col-md-6">
@@ -193,10 +200,11 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 value={formData.university}
                 onChange={(e) => handleChange('university', e.target.value)}
                 className={`form-select ${errors.university ? 'is-invalid' : ''}`}
+                style={{ fontSize: '0.9rem' }}
               >
-                <option value="">Please Select</option>
-                <option value="tni">Thai-Nichi Institute of Technology (TNI)</option>
-                <option value="other">Other</option>
+                <option value="">Please Select / 選択してください</option>
+                <option value="tni">Thai-Nichi Institute of Technology (TNI) / タイ日工業大学</option>
+                <option value="other">Other / その他</option>
               </select>
             </div>
             <div className="col-12 col-md-6">
@@ -207,7 +215,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 className="form-control"
                 placeholder="If Other - Please Specify"
               />
-              <div className="form-text">If Other - Please Specify</div>
+              <div className="form-text" style={{ fontSize: '0.85rem' }}>その他の場合 - ご指定ください</div>
             </div>
           </div>
           {errors.university && (
@@ -217,8 +225,8 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
         {/* Faculty - Dropdown with "If Other" field to the RIGHT */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
-            Faculty
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
+            Faculty / 学部
           </label>
           <div className="row g-2">
             <div className="col-12 col-md-6">
@@ -226,11 +234,12 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 value={formData.faculty}
                 onChange={(e) => handleChange('faculty', e.target.value)}
                 className={`form-select ${errors.faculty ? 'is-invalid' : ''}`}
+                style={{ fontSize: '0.9rem' }}
               >
-                <option value="">Please Select</option>
+                <option value="">Please Select / 選択してください</option>
                 {facultyOptions.map((faculty, index) => (
                   <option key={index} value={faculty}>
-                    {faculty === 'other' ? 'Other' : faculty}
+                    {faculty === 'other' ? 'Other / その他' : faculty}
                   </option>
                 ))}
               </select>
@@ -243,7 +252,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 className="form-control"
                 placeholder="If Other - Please Specify"
               />
-              <div className="form-text">If Other - Please Specify</div>
+              <div className="form-text" style={{ fontSize: '0.85rem' }}>その他の場合 - ご指定ください</div>
             </div>
           </div>
           {errors.faculty && (
@@ -251,31 +260,46 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
           )}
         </div>
 
-        {/* Academic Year of PhD */}
+        {/* Academic Year of PhD and Age */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
-            Academic year of PhD
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
+            Academic year of PhD / 博士課程年次
           </label>
-          <div className="w-50">
-            <select
-              value={formData.academicYear}
-              onChange={(e) => handleChange('academicYear', e.target.value)}
-              className="form-select"
-            >
-              <option value="">Please Select</option>
-              <option value="year1">Year 1</option>
-              <option value="year2">Year 2</option>
-              <option value="year3">Year 3</option>
-              <option value="year4">Year 4</option>
-              <option value="year5+">Year 5+</option>
-            </select>
+          <div className="row g-3">
+            <div className="col-12 col-sm-6">
+              <select
+                value={formData.academicYear}
+                onChange={(e) => handleChange('academicYear', e.target.value)}
+                className="form-select"
+                style={{ fontSize: '0.9rem' }}
+              >
+                <option value="">Please Select / 選択してください</option>
+                <option value="year1">Year 1 / 1年</option>
+                <option value="year2">Year 2 / 2年</option>
+                <option value="year3">Year 3 / 3年</option>
+                <option value="year4">Year 4 / 4年</option>
+                <option value="year5+">Year 5+ / 5年以上</option>
+              </select>
+            </div>
+            <div className="col-12 col-sm-6">
+              <input
+                type="number"
+                value={formData.age}
+                onChange={(e) => handleChange('age', e.target.value)}
+                className="form-control"
+                placeholder="Age"
+                min="1"
+                max="120"
+              />
+              <div className="form-text" style={{ fontSize: '0.85rem' }}>年齢</div>
+            </div>
           </div>
         </div>
 
         {/* Email */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
-            Email Address
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
+            Email Address / メールアドレス
           </label>
           <input
             type="email"
@@ -291,7 +315,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
         {/* Interests */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
             What are you interested in? / どのようなことに興味がありますか？
           </label>
           <div className="d-flex flex-column gap-2">
@@ -375,7 +399,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
         {/* Optional Comments */}
         <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold">
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem' }}>
             Optional Comments / その他・ご質問
           </label>
           <textarea
@@ -386,6 +410,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
             className="form-control"
             placeholder="Please enter any requests or comments"
           />
+          <div className="form-text" style={{ fontSize: '0.85rem' }}>ご要望やコメントをご入力ください</div>
           <div className="form-text text-end">
             {formData.comments.length}/500
           </div>

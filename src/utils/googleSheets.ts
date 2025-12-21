@@ -9,7 +9,7 @@
  * 3. Set VITE_BACKEND_URL in .env file (e.g., http://localhost:5000)
  */
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'
 
 export interface FormSubmission {
   fullName: string
@@ -17,6 +17,7 @@ export interface FormSubmission {
   university: string
   faculty: string
   academicYear: string
+  age: string
   email: string
   interests: string[]
   comments: string
