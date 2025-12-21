@@ -135,6 +135,23 @@ def submit_form():
                     'Comments'
                 ]
                 sheet.append_row(headers)
+            else:
+                # Check if Age column exists, if not add it
+                try:
+                    header_row = sheet.row_values(1)
+                    if 'Age' not in header_row:
+                        # Find the position after 'Academic Year of PhD' (column index 6, so insert at 7)
+                        # gspread uses 1-based indexing
+                        age_col_index = 7
+                        sheet.insert_cols([['Age']], age_col_index)
+                        print("Added Age column to existing sheet")
+                        # Update existing rows to have empty Age value to maintain column alignment
+                        num_rows = sheet.row_count
+                        if num_rows > 1:  # If there are data rows
+                            for row_num in range(2, num_rows + 1):
+                                sheet.update_cell(row_num, age_col_index, '')
+                except Exception as e:
+                    print(f"Error checking/adding Age column: {e}")
             
             sheet.append_row(row_data)
         
