@@ -2,6 +2,7 @@
  * QR Code Generation Utility
  * 
  * This utility generates a QR code for the form URL.
+ * The QR code is Evergreen (permanent) and does not expire.
  * You can use a library like qrcode.react or a service like QR Server API.
  */
 

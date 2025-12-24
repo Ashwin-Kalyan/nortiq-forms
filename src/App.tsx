@@ -32,11 +32,17 @@ function App() {
   }
 
   return (
-    <div className="min-vh-100 py-3 py-md-4 py-lg-5" style={{ backgroundColor: '#f0f4f8' }}>
+    <div 
+      className="min-vh-100 py-3 py-md-4 py-lg-5" 
+      style={{ 
+        background: 'linear-gradient(135deg, #00B7CE 0%, #007A8A 100%)',
+        minHeight: '100vh'
+      }}
+    >
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8 col-xl-7">
-            <div className="card shadow-sm">
+            <div className="card shadow-lg border-0" style={{ borderRadius: '12px', backgroundColor: '#ffffff' }}>
               <div className="card-body p-3 p-md-4 p-lg-5">
                 <RegistrationForm onSubmit={handleFormSubmit} />
               </div>

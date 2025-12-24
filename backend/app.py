@@ -5,14 +5,24 @@ Handles Google Sheets and email sending
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import gspread
-from google.oauth2.service_account import Credentials
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+
+# Try to import Google Sheets libraries, but handle errors gracefully
+try:
+    import gspread
+    from google.oauth2.service_account import Credentials
+    SHEETS_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: Google Sheets libraries not available: {e}")
+    print("The server will start, but Google Sheets integration will be disabled.")
+    SHEETS_AVAILABLE = False
+    gspread = None
+    Credentials = None
 
 load_dotenv()
 
@@ -35,6 +45,9 @@ GOOGLE_CREDENTIALS_PATH = os.getenv("GOOGLE_CREDENTIALS_PATH", "credentials.json
 
 def get_sheet():
     """Connect to Google Sheets"""
+    if not SHEETS_AVAILABLE:
+        print("Google Sheets libraries not available - skipping Sheets integration")
+        return None
     try:
         creds = Credentials.from_service_account_file(GOOGLE_CREDENTIALS_PATH, scopes=SCOPE)
         client = gspread.authorize(creds)
@@ -53,6 +66,7 @@ def send_email(to_email, name):
     try:
         subject = "ご登録ありがとうございます / Thank you for your registration"
         
+        # TODO: Replace this message with the president's wording when received
         html_body = f"""
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2>ご登録ありがとうございます</h2>
@@ -104,17 +118,18 @@ def submit_form():
         data = request.json
         
         # Prepare row data for Google Sheets
+        interests_str = ', '.join(data.get('interests', [])) if isinstance(data.get('interests'), list) else data.get('interests', '')
+        
         row_data = [
             datetime.now().isoformat(),  # Timestamp
-            data.get('fullName', ''),
+            data.get('fullName', ''),  # Full Name
             data.get('furigana', ''),
-            data.get('university', ''),
+            data.get('gender', ''),
             data.get('faculty', ''),
-            data.get('academicYear', ''),
-            data.get('age', ''),
+            data.get('desiredYear', ''),  # Year
             data.get('email', ''),
-            ', '.join(data.get('interests', [])) if isinstance(data.get('interests'), list) else data.get('interests', ''),
-            data.get('comments', ''),
+            interests_str,  # Interest
+            data.get('comments', ''),  # Note
         ]
         
         # Write to Google Sheets
@@ -126,32 +141,14 @@ def submit_form():
                     'Timestamp',
                     'Full Name',
                     'Furigana',
-                    'University',
+                    'Gender',
                     'Faculty',
-                    'Academic Year of PhD',
-                    'Age',
+                    'Year',
                     'Email',
-                    'Interests',
-                    'Comments'
+                    'Interest',
+                    'Note'
                 ]
                 sheet.append_row(headers)
-            else:
-                # Check if Age column exists, if not add it
-                try:
-                    header_row = sheet.row_values(1)
-                    if 'Age' not in header_row:
-                        # Find the position after 'Academic Year of PhD' (column index 6, so insert at 7)
-                        # gspread uses 1-based indexing
-                        age_col_index = 7
-                        sheet.insert_cols([['Age']], age_col_index)
-                        print("Added Age column to existing sheet")
-                        # Update existing rows to have empty Age value to maintain column alignment
-                        num_rows = sheet.row_count
-                        if num_rows > 1:  # If there are data rows
-                            for row_num in range(2, num_rows + 1):
-                                sheet.update_cell(row_num, age_col_index, '')
-                except Exception as e:
-                    print(f"Error checking/adding Age column: {e}")
             
             sheet.append_row(row_data)
         
