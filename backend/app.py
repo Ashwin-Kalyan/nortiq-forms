@@ -60,35 +60,55 @@ def get_sheet():
 def send_email(to_email, name):
     """Send confirmation email"""
     if not EMAIL_USER or not EMAIL_PASSWORD:
-        print("Email credentials not configured")
+        print("=" * 50)
+        print("ERROR: Email credentials not configured!")
+        print("Please set EMAIL_USER and EMAIL_PASSWORD in backend/.env file")
+        print("Make sure EMAIL_PASSWORD is an App Password, not your regular Gmail password")
+        print("=" * 50)
         return False
     
     try:
-        subject = "ご登録ありがとうございます / Thank you for your registration"
+        subject = "本日のブース訪問、ありがとうございます / Thanks for visiting our booth today!"
         
-        # TODO: Replace this message with the president's wording when received
         html_body = f"""
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2>ご登録ありがとうございます</h2>
-            <p>{name} 様</p>
+            <div style="margin-bottom: 30px;">
+                <h2 style="color: #333; margin-bottom: 15px;">本日のブース訪問、ありがとうございます。</h2>
+                
+                <p>貴方のご回答、確かに拝見しました。</p>
+                <p>担当者より改めてご連絡いたします。</p>
+                
+                <p style="margin-top: 20px;">私たちは日本で、決して止まってはいけない社会インフラを支える通信技術に取り組んでいます。</p>
+                
+                <p>日本で学び、経験を積み、将来その力をタイで活かしたい方との出会いを楽しみにしています。</p>
+                
+                <div style="margin-top: 30px;">
+                    <p style="margin-bottom: 5px;"><strong>CEO 十河元太郎</strong></p>
+                    <p style="margin-bottom: 5px;"><strong>協和テクノロジィズ株式会社</strong></p>
+                    <p style="margin-bottom: 5px;">採用専用メールアドレス: <a href="mailto:r-hirata@star.kyotec.co.jp">r-hirata@star.kyotec.co.jp</a></p>
+                </div>
+            </div>
             
-            <p>この度は、展示会来訪者入力フォームにご登録いただき、誠にありがとうございます。</p>
-            <p>ご入力いただいた内容を確認させていただきました。</p>
-            <p>後日、担当者よりご連絡させていただきますので、今しばらくお待ちください。</p>
+            <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
             
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
-            
-            <h2>Thank you for your registration</h2>
-            <p>Dear {name},</p>
-            
-            <p>Thank you for filling out the form.</p>
-            <p>We have received your information and will review it carefully.</p>
-            <p>Our team will contact you in the near future. Please wait for our response.</p>
-            
-            <p style="margin-top: 30px; font-size: 12px; color: #666;">
-                このメールは自動送信されています。<br>
-                This is an automated email.
-            </p>
+            <div>
+                <h2 style="color: #333; margin-bottom: 15px;">Dear All,</h2>
+                
+                <p><strong>Thanks for visiting our booth today!</strong></p>
+                <p><strong>we'll be in touch soon!</strong></p>
+                
+                <p style="margin-top: 20px;">Our mission is engineering the critical communication technologies that keep essential infrastructure running in Japan.</p>
+                
+                <p><strong>Join us in Japan and grow with us!</strong></p>
+                <p><strong>We guide you and we learn together!</strong></p>
+                
+                <div style="margin-top: 30px;">
+                    <p style="margin-bottom: 5px;">Yours sincerely,</p>
+                    <p style="margin-bottom: 5px;"><strong>Gentaro Sogo</strong></p>
+                    <p style="margin-bottom: 5px;"><strong>CEO Kyowa Technologies Co., Ltd.</strong></p>
+                    <p style="margin-bottom: 5px;">Continued contact: <a href="mailto:r-hirata@star.kyotec.co.jp">r-hirata@star.kyotec.co.jp</a></p>
+                </div>
+            </div>
         </div>
         """
         
@@ -106,9 +126,30 @@ def send_email(to_email, name):
         server.send_message(msg)
         server.quit()
         
+        print(f"Email sent successfully to {to_email}")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print("=" * 50)
+        print(f"ERROR: SMTP Authentication failed!")
+        print(f"Details: {e}")
+        print("This usually means:")
+        print("1. EMAIL_PASSWORD is incorrect (make sure it's an App Password, not your regular password)")
+        print("2. 2-Step Verification is not enabled on your Google Account")
+        print("3. App Password was not generated correctly")
+        print("=" * 50)
+        return False
+    except smtplib.SMTPException as e:
+        print("=" * 50)
+        print(f"ERROR: SMTP error occurred!")
+        print(f"Details: {e}")
+        print("=" * 50)
+        return False
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print("=" * 50)
+        print(f"ERROR: Failed to send email to {to_email}")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error details: {e}")
+        print("=" * 50)
         return False
 
 @app.route('/submit', methods=['POST'])
@@ -156,7 +197,11 @@ def submit_form():
         email = data.get('email', '')
         name = data.get('fullName', 'User')
         if email:
-            send_email(email, name)
+            email_result = send_email(email, name)
+            if not email_result:
+                print(f"WARNING: Failed to send email to {email}. Check email configuration and server logs.")
+            else:
+                print(f"Successfully sent confirmation email to {email}")
         
         return jsonify({
             'success': True,
