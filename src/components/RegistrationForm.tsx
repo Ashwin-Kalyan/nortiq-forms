@@ -3,10 +3,10 @@ import { useState, FormEvent } from 'react'
 interface FormData {
   firstName: string
   lastName: string
-  furigana: string
   gender: string
   faculty: string
   facultyOther: string
+  desiredPosition: string
   desiredYear: string
   email: string
   emailConfirm: string
@@ -23,10 +23,10 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
-    furigana: '',
     gender: '',
     faculty: '',
     facultyOther: '',
+    desiredPosition: '',
     desiredYear: '',
     email: '',
     emailConfirm: '',
@@ -68,14 +68,14 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last Name is required / 姓は必須です'
     }
-    if (!formData.furigana.trim()) {
-      newErrors.furigana = 'Furigana is required / ふりがなは必須です'
-    }
     if (!formData.gender) {
       newErrors.gender = 'Gender is required / 性別は必須です'
     }
     if (!formData.faculty && !formData.facultyOther.trim()) {
       newErrors.faculty = 'Faculty is required / 学部は必須です'
+    }
+    if (!formData.desiredPosition) {
+      newErrors.desiredPosition = 'Desired position is required / 希望職種は必須です'
     }
     if (!formData.desiredYear) {
       newErrors.desiredYear = 'Desired year to work is required / 就職希望年度は必須です'
@@ -112,9 +112,9 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
       try {
         const submissionData = {
           fullName: `${formData.firstName} ${formData.lastName}`,
-          furigana: formData.furigana,
           gender: formData.gender,
           faculty: formData.faculty === 'other' ? formData.facultyOther : formData.faculty,
+          desiredPosition: formData.desiredPosition,
           desiredYear: formData.desiredYear,
           email: formData.email,
           interests: formData.interests,
@@ -137,7 +137,6 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
     'MA / Master\'s Course / MA/修士課程',
     'Graduated / 既卒',
     'Other / その他',
-    'other',
   ]
 
   const handlePrivacyChange = (checked: boolean) => {
@@ -149,37 +148,62 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
 
   return (
     <div>
-      {/* Company Name at Top */}
-      <div className="text-center mb-3 d-flex align-items-center justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
+      {/* Logo at Top Center */}
+      <div className="text-center mb-3" style={{ padding: '0 0.5rem' }}>
         <img 
           src="/logo.png" 
           alt="Kyowa Technologies Logo" 
           style={{ 
-            height: 'clamp(3.5rem, 8vw, 5rem)',
+            height: 'clamp(3.5rem, 8vw, 6.5rem)',
             width: 'auto',
-            maxWidth: '350px',
+            maxWidth: '100%',
             objectFit: 'contain',
             display: 'inline-block',
-            verticalAlign: 'middle',
-            flexShrink: 0
+            margin: '0 auto'
           }}
           onError={(e) => {
             console.error('Logo failed to load');
             e.currentTarget.style.display = 'none';
           }}
         />
-        <h1 className="fw-bold mb-2" style={{ fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', color: '#00B7CE', margin: 0, flexShrink: 1 }}>
+      </div>
+
+      {/* Company Name */}
+      <div className="text-center mb-3" style={{ padding: '0 0.5rem' }}>
+        <h1 className="fw-bold mb-2" style={{ 
+          fontSize: 'clamp(1.5rem, 5vw, 3.5rem)', 
+          color: '#00B7CE', 
+          margin: 0, 
+          wordBreak: 'break-word',
+          hyphens: 'auto',
+          lineHeight: '1.2'
+        }}>
           Kyowa Technologies Co., Ltd.
         </h1>
       </div>
 
-      {/* Title */}
-      <h2 className="text-center mb-4 mb-md-5 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', color: '#333333' }}>
-        展示会来訪者入力フォーム
+      {/* Main Message */}
+      <h2 className="text-center mb-3 mb-md-4 fw-bold" style={{ 
+        fontSize: 'clamp(1.25rem, 4vw, 2.75rem)', 
+        color: '#333333', 
+        lineHeight: '1.3',
+        padding: '0 0.5rem',
+        wordBreak: 'break-word'
+      }}>
+        Connect with us!!! For Internships and Employment and MORE!!!
       </h2>
-      <p className="text-center mb-4" style={{ color: '#666666', fontSize: '0.95rem' }}>
-        Work with us in Japan! We will contact you!<br />
-        日本で一緒に働きましょう！ご連絡させていただきます！
+
+      {/* Subtitle */}
+      <p className="text-center mb-4 mb-md-5" style={{ 
+        color: '#333333', 
+        fontSize: 'clamp(1rem, 2.5vw, 1.75rem)', 
+        fontWeight: '600',
+        padding: '0 0.5rem',
+        wordBreak: 'break-word',
+        lineHeight: '1.4'
+      }}>
+        Work with us in Japan!!! We will contact you!!!<br />
+        <span style={{ fontSize: 'clamp(0.75rem, 1.8vw, 1rem)', color: '#666666', fontWeight: '400' }}>日本で一緒に働きましょう！ご連絡させていただきます！</span>
       </p>
 
       <form onSubmit={handleSubmit}>
@@ -214,23 +238,6 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Furigana */}
-        <div className="mb-3 mb-md-4">
-          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem', color: '#333333' }}>
-            Furigana / ふりがな <span className="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            value={formData.furigana}
-            onChange={(e) => handleChange('furigana', e.target.value)}
-            className={`form-control ${errors.furigana ? 'is-invalid' : ''}`}
-            placeholder="Furigana / ふりがな"
-          />
-          {errors.furigana && (
-            <div className="invalid-feedback">{errors.furigana}</div>
-          )}
         </div>
 
         {/* Gender */}
@@ -268,8 +275,8 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
           >
             <option value="">Please Select / 選択してください</option>
             {facultyOptions.map((faculty, index) => (
-              <option key={index} value={faculty}>
-                {faculty === 'other' ? 'Other / その他' : faculty}
+              <option key={index} value={faculty === 'Other / その他' ? 'other' : faculty}>
+                {faculty}
               </option>
             ))}
           </select>
@@ -284,6 +291,26 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
           )}
           {errors.faculty && (
             <div className="invalid-feedback d-block">{errors.faculty}</div>
+          )}
+        </div>
+
+        {/* Desired Position */}
+        <div className="mb-3 mb-md-4">
+          <label className="form-label fw-semibold" style={{ fontSize: '0.9rem', color: '#333333' }}>
+            Desired Position / 希望職種 <span className="text-danger">*</span>
+          </label>
+          <select
+            value={formData.desiredPosition}
+            onChange={(e) => handleChange('desiredPosition', e.target.value)}
+            className={`form-select ${errors.desiredPosition ? 'is-invalid' : ''}`}
+            style={{ fontSize: '0.9rem' }}
+          >
+            <option value="">Please Select / 選択してください</option>
+            <option value="Field Engineer">Field Engineer</option>
+            <option value="Software Engineer AI Related">Software Engineer AI Related</option>
+          </select>
+          {errors.desiredPosition && (
+            <div className="invalid-feedback">{errors.desiredPosition}</div>
           )}
         </div>
 

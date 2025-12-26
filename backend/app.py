@@ -164,9 +164,9 @@ def submit_form():
         row_data = [
             datetime.now().isoformat(),  # Timestamp
             data.get('fullName', ''),  # Full Name
-            data.get('furigana', ''),
             data.get('gender', ''),
             data.get('faculty', ''),
+            data.get('desiredPosition', ''),  # Desired Position
             data.get('desiredYear', ''),  # Year
             data.get('email', ''),
             interests_str,  # Interest
@@ -176,20 +176,26 @@ def submit_form():
         # Write to Google Sheets
         sheet = get_sheet()
         if sheet:
-            # Check if headers exist, if not add them
-            if sheet.row_count == 0 or sheet.cell(1, 1).value != 'Timestamp':
-                headers = [
-                    'Timestamp',
-                    'Full Name',
-                    'Furigana',
-                    'Gender',
-                    'Faculty',
-                    'Year',
-                    'Email',
-                    'Interest',
-                    'Note'
-                ]
+            # Define correct headers
+            headers = [
+                'Timestamp',
+                'Full Name',
+                'Gender',
+                'Faculty',
+                'Desired Position',
+                'Year',
+                'Email',
+                'Interest',
+                'Note'
+            ]
+            
+            # Check if headers exist and are correct
+            if sheet.row_count == 0:
+                # Sheet is empty, add headers
                 sheet.append_row(headers)
+            elif sheet.cell(1, 1).value != 'Timestamp' or sheet.cell(1, 2).value != 'Full Name':
+                # Headers don't match or don't exist, update row 1
+                sheet.update('A1:I1', [headers])
             
             sheet.append_row(row_data)
         

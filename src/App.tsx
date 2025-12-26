@@ -41,7 +41,7 @@ function App() {
     >
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-8 col-xl-7">
+          <div className="col-12 col-md-11 col-lg-10 col-xl-9">
             <div className="card shadow-lg border-0" style={{ borderRadius: '12px', backgroundColor: '#ffffff' }}>
               <div className="card-body p-3 p-md-4 p-lg-5">
                 <RegistrationForm onSubmit={handleFormSubmit} />

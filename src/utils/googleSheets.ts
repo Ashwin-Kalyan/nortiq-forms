@@ -13,9 +13,9 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'
 
 export interface FormSubmission {
   fullName: string
-  furigana: string
   gender: string
   faculty: string
+  desiredPosition: string
   desiredYear: string
   email: string
   interests: string[]
