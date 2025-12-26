@@ -150,8 +150,25 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
   return (
     <div>
       {/* Company Name at Top */}
-      <div className="text-center mb-3">
-        <h1 className="fw-bold mb-2" style={{ fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', color: '#00B7CE' }}>
+      <div className="text-center mb-3 d-flex align-items-center justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
+        <img 
+          src="/logo.png" 
+          alt="Kyowa Technologies Logo" 
+          style={{ 
+            height: 'clamp(3.5rem, 8vw, 5rem)',
+            width: 'auto',
+            maxWidth: '350px',
+            objectFit: 'contain',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            flexShrink: 0
+          }}
+          onError={(e) => {
+            console.error('Logo failed to load');
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <h1 className="fw-bold mb-2" style={{ fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', color: '#00B7CE', margin: 0, flexShrink: 1 }}>
           Kyowa Technologies Co., Ltd.
         </h1>
       </div>
@@ -350,60 +367,12 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
               <input
                 className="form-check-input"
                 type="checkbox"
-                checked={formData.interests.includes('Part-time Job in Japan / 日本でのアルバイト')}
-                onChange={() => handleInterestToggle('Part-time Job in Japan / 日本でのアルバイト')}
-                id="interest-pt"
-              />
-              <label className="form-check-label" htmlFor="interest-pt" style={{ color: '#333333' }}>
-                Part-time Job in Japan / 日本でのアルバイト
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
                 checked={formData.interests.includes('Internship in Japan / 日本でのインターンシップ')}
                 onChange={() => handleInterestToggle('Internship in Japan / 日本でのインターンシップ')}
                 id="interest-int"
               />
               <label className="form-check-label" htmlFor="interest-int" style={{ color: '#333333' }}>
                 Internship in Japan / 日本でのインターンシップ
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={formData.interests.includes('Career Consultation / キャリア相談')}
-                onChange={() => handleInterestToggle('Career Consultation / キャリア相談')}
-                id="interest-cc"
-              />
-              <label className="form-check-label" htmlFor="interest-cc" style={{ color: '#333333' }}>
-                Career Consultation / キャリア相談
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={formData.interests.includes('Company Information / 会社情報')}
-                onChange={() => handleInterestToggle('Company Information / 会社情報')}
-                id="interest-ci"
-              />
-              <label className="form-check-label" htmlFor="interest-ci" style={{ color: '#333333' }}>
-                Company Information / 会社情報
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={formData.interests.includes('Other / その他')}
-                onChange={() => handleInterestToggle('Other / その他')}
-                id="interest-other"
-              />
-              <label className="form-check-label" htmlFor="interest-other" style={{ color: '#333333' }}>
-                Other / その他
               </label>
             </div>
           </div>
