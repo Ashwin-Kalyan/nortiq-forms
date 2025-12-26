@@ -1,9 +1,14 @@
 import { useState } from 'react'
 import RegistrationForm from './components/RegistrationForm'
 import SuccessModal from './components/SuccessModal'
+import QRCodePage from './components/QRCodePage'
 import { submitToGoogleSheets, FormSubmission } from './utils/googleSheets'
 
 function App() {
+  // Check if we're on the QR code page
+  if (window.location.pathname === '/qr') {
+    return <QRCodePage />
+  }
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [submittedData, setSubmittedData] = useState<FormSubmission | null>(null)
 

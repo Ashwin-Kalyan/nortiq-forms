@@ -6,34 +6,50 @@ import QRCodeDisplay from './QRCodeDisplay'
  * Access this at /qr or similar route
  */
 const QRCodePage = () => {
-  const formUrl = window.location.origin
+  // Use environment variable if set, otherwise use the production Vercel URL
+  // You can override this by setting VITE_FORM_URL in Vercel environment variables
+  const productionUrl = 'https://nortiq-forms-vercel-7z71oitew-ashwin-kalyans-projects.vercel.app'
+  const formUrl = import.meta.env.VITE_FORM_URL || productionUrl
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            QR Code for Job Fair Registration Form
-          </h1>
-          <div className="flex justify-center mb-6">
-            <QRCodeDisplay formUrl={formUrl} size={300} />
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-4">
-              Form URL:
-            </p>
-            <p className="text-blue-600 font-mono text-sm break-all">
-              {formUrl}
-            </p>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(formUrl)
-                alert('URL copied to clipboard!')
-              }}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Copy URL
-            </button>
+    <div 
+      className="min-vh-100 py-3 py-md-4 py-lg-5" 
+      style={{ 
+        background: 'linear-gradient(135deg, #00B7CE 0%, #007A8A 100%)',
+        minHeight: '100vh'
+      }}
+    >
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-10 col-lg-8">
+            <div className="card shadow-lg border-0" style={{ borderRadius: '12px', backgroundColor: '#ffffff' }}>
+              <div className="card-body p-4 p-md-5">
+                <h1 className="text-center mb-4 mb-md-5 fw-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', color: '#333333' }}>
+                  QR Code for Job Fair Registration Form
+                </h1>
+                <div className="d-flex justify-content-center mb-4 mb-md-5">
+                  <QRCodeDisplay formUrl={formUrl} size={300} />
+                </div>
+                <div className="text-center">
+                  <p className="mb-3" style={{ fontSize: '0.95rem', color: '#666666' }}>
+                    Form URL:
+                  </p>
+                  <p className="mb-4 text-break" style={{ color: '#00B7CE', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+                    {formUrl}
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(formUrl)
+                      alert('URL copied to clipboard!')
+                    }}
+                    className="btn btn-primary"
+                    style={{ backgroundColor: '#00B7CE', borderColor: '#00B7CE' }}
+                  >
+                    Copy URL
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -42,4 +58,3 @@ const QRCodePage = () => {
 }
 
 export default QRCodePage
-
